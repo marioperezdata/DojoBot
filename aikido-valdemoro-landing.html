@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aikido Valdemoro · DojoBot</title>
+<meta name="description" content="Aikido en Valdemoro. Primera clase gratis. Entrenamiento para todas las edades.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥋</text></svg>">
+<link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+<style>
+:root {
+  --ink: #0b1220;
+  --muted: #51607a;
+  --brand: #e11d48;
+  --ring: #2563eb;
+  --line: #e8ecf3;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #ffffff;
+  color: var(--ink);
+  font: 16px/1.6 system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+}
+
+/* HEADER NEGRO */
+header.hero {
+  background: #0b0b0c;
+  color: #fff;
+  border-bottom: 1px solid #111;
+  padding: 0;
+}
+
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 18px;
+}
+
+.hero-inner {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 22px;
+  align-items: center;
+}
+
+.hero h1 {
+  font-size: clamp(26px, 4vw, 44px);
+  margin: 0 0 8px;
+}
+
+.hero p {
+  margin: 8px 0 16px;
+  color: #c9d2df;
+}
+
+.cta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.btn {
+  appearance: none;
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  background: #e11d48;
+  color: #fff;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.4);
+}
+
+.btn.s {
+  background: #0ea5e9;
+}
+
+.hero-right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+}
+
+.logo {
+  max-width: 280px;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.5));
+}
+
+/* SECCIONES BLANCAS */
+h2 {
+  margin: 0 0 8px;
+  font-size: clamp(22px, 2.6vw, 28px);
+}
+
+.sub {
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+
+.grid {
+  display: grid;
+  gap: 22px;
+}
+
+.two {
+  grid-template-columns: 1fr 1fr;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 22px;
+}
+
+/* PRESENTACIÓN - ALINEADO A LA IZQUIERDA */
+#presentacion {
+  background: transparent;
+  color: inherit;
+  max-width: 1200px;
+  margin: 24px auto 12px;
+  padding: 0 20px;
+}
+
+#presentacion .wrap {
+  padding: 0;
+}
+
+#presentacion p {
+  margin: 0.6rem 0;
+  line-height: 1.6;
+  text-align: left;
+}
+
+/* FORMULARIO */
+.form {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 22px;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.row {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+}
+
+label {
+  display: block;
+  font-size: 0.92rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+input,
+textarea {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #dbe2ea;
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: var(--ink);
+  outline: none;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.status {
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 10px;
+  display: none;
+}
+
+.ok {
+  display: block;
+  background: #e7f8ef;
+  border: 1px solid #93e1b9;
+  color: #065f46;
+}
+
+.err {
+  display: block;
+  background: #fdeaea;
+  border: 1px solid #fca5a5;
+  color: #7f1d1d;
+}
+
+.warn {
+  display: block;
+  background: #fff7ed;
+  border: 1px solid #fbbf24;
+  color: #92400e;
+}
+
+.hp {
+  position: absolute;
+  left: -5000px;
+  opacity: 0;
+}
+
+/* ADMIN PANEL */
+#adminToggle {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  opacity: 0.25;
+  cursor: pointer;
+  font-size: 24px;
+  background: #0b0b0b;
+  color: #fff;
+  border: 1px solid #333;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+  z-index: 9998;
+}
+
+#adminToggle:hover {
+  opacity: 1;
+}
+
+#admin {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10000;
+}
+
+#admin .inner {
+  width: min(600px, 92vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+#admin h3 {
+  margin: 0 0 12px;
+  font-size: 20px;
+  color: var(--ink);
+}
+
+#admin h4 {
+  margin: 16px 0 8px;
+  font-size: 16px;
+  color: var(--brand);
+}
+
+#admin label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+#admin input {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+#admin .buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+#admin .btn {
+  flex: 1;
+}
+
+#admin .btn.secondary {
+  background: #6b7280;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+  }
+  
+  .two {
+    grid-template-columns: 1fr;
+  }
+  
+  .row {
+    grid-template-columns: 1fr;
+  }
+  
+  .hero-right {
+    order: -1;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER NEGRO -->
+<header class="hero">
+  <div class="wrap hero-inner">
+    <div class="hero-left">
+      <h1>Aikido Valdemoro</h1>
+      <p>Descubre un arte marcial que no busca vencer al otro, sino superarte a ti mismo. 
+      En el tatami aprenderás a mantener la calma bajo presión, moverte con decisión y transformar la fuerza del rival en equilibrio. 
+      No importa tu edad ni tu condición física: aquí todos empiezan desde cero y progresan juntos.</p>
+      <p><strong>⚡ Empieza hoy y nota el cambio. Primera clase gratis.</strong></p>
+      <div class="cta">
+        <a href="#reserva" class="btn">Información</a>
+        <a href="#contacto" class="btn s">Contacto</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <img class="logo" src="logo_aikido.png" alt="Aikido Valdemoro">
+    </div>
+  </div>
+</header>
+
+<!-- PRESENTACIÓN -->
+<section id="presentacion">
+  <div class="wrap">
+    <p><strong>¡Bienvenido a la Escuela de Aikido Valdemoro!</strong> Con más de 15 años de experiencia enseñando Aikido, nuestros maestros están comprometidos en ayudarte a alcanzar tus metas, independientemente de tu edad o habilidades físicas. En nuestras clases, encontrarás un ambiente acogedor, donde el compañerismo y el buen rollo son la norma.</p>
+    <p>Apto para todas las edades y sexos, el Aikido se enfoca en la <strong>defensa personal y la resolución pacífica de conflictos</strong>. A través de la práctica, mejorarás tu fuerza, flexibilidad, coordinación y autocontrol, desarrollando confianza y habilidades para situaciones estresantes. <strong>¡Únete a nuestras clases de Aikido y comienza tu viaje!</strong></p>
+  </div>
+</section>
+
+<!-- FORMULARIO Y CONTACTO -->
+<main class="wrap">
+  <section id="reserva" class="grid two">
+    <div>
+      <h2>Solicita información</h2>
+      <p class="sub">Déjanos tus datos y te confirmamos plaza en el grupo adecuado.</p>
+      <form id="form" class="form" novalidate>
+        <input class="hp" type="text" id="website" name="website" autocomplete="off" tabindex="-1" aria-hidden="true" />
+        
+        <div class="row">
+          <div>
+            <label for="name">Nombre *</label>
+            <input id="name" name="name" required placeholder="Tu nombre completo"/>
+          </div>
+          <div>
+            <label for="phone">Teléfono *</label>
+            <input id="phone" name="phone" type="tel" required placeholder="+34 699 062 992" pattern="[+\-\. ()0-9]{6,}"/>
+          </div>
+        </div>
+        
+        <div>
+          <label for="email">Correo electrónico *</label>
+          <input id="email" name="email" type="email" required placeholder="tu@email.com"/>
+        </div>
+        
+        <div>
+          <label for="msg">Mensaje (opcional)</label>
+          <textarea id="msg" name="message" placeholder="Cuéntanos tu edad, nivel o cualquier duda que tengas"></textarea>
+        </div>
+        
+        <div style="display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="consent" required style="width:auto"/> 
+            Acepto el tratamiento de mis datos
+          </label>
+          <button id="send" class="btn" type="submit">Enviar </button>
+        </div>
+        
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+      </form>
+    </div>
+    
+    <div id="contacto" class="card">
+      <h2>Contacto</h2>
+      <p class="sub">Mario · <a href="tel:+34699062992">657 83 80 61</a> · <a href="mailto:marioperez.data@gmail.com">marioperez.data@gmail.com</a></p>
+      <h3 style="margin:10px 0 6px">Ubicaciones</h3>
+      <ul class="sub" style="margin:0 0 12px;padding-left:18px">
+        <li>CEIP Vicente Aleixandre · C/ Velázquez, 2</li>
+        <li>Polideportivo Juan Antonio Samaranch · Pº del Prado, 26</li>
+      </ul>
+      <div class="sub">Ver en Google Maps: 
+        <a href="https://maps.google.com/?q=CEIP+Vicente+Aleixandre+Valdemoro" target="_blank" rel="noopener">Vicente Aleixandre</a> · 
+        <a href="https://maps.google.com/?q=Polideportivo+Juan+Antonio+Samaranch+Valdemoro" target="_blank" rel="noopener">Samaranch</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHATBOT N8N -->
+  <div id="n8n-chat"></div>
+</main>
+
+<!-- FOOTER -->
+<footer class="wrap" style="opacity:0.75;font-size:0.9rem;margin-top:10px;text-align:center">
+  © <span id="year"></span> Aikido Valdemoro – Armonía en movimiento.
+</footer>
+
+<!-- ADMIN TOGGLE -->
+<div id="adminToggle" title="Configurar webhooks (Ctrl+Shift+W)">⚙️</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin" role="dialog" aria-modal="true">
+  <div class="inner">
+    <h3>⚙️ Configuración de Webhooks</h3>
+    <p class="sub">Las URLs se guardan en localStorage de tu navegador.</p>
+    
+    <h4>📝 Webhook del Formulario</h4>
+    <label for="webhookForm">URL del webhook de n8n para el formulario</label>
+    <input id="webhookForm" type="url" placeholder="https://n8n-n8n.b4yydm.easypanel.host/webhook/formulario-web">
+    
+    <h4>💬 Webhook del Chatbot</h4>
+    <label for="webhookChat">URL del webhook de n8n para el chat</label>
+    <input id="webhookChat" type="url" placeholder="https://n8n-n8n.b4yydm.easypanel.host/webhook/f61e1b9f-0f81-46b8-828e-668bfeeeb3eb/chat">
+    
+    <div class="buttons">
+      <button id="save" class="btn" type="button">💾 Guardar todo</button>
+      <button id="closeAdmin" class="btn secondary" type="button">✖️ Cerrar</button>
+    </div>
+    
+    <p class="sub" style="margin-top:16px;font-size:0.85rem">
+      💡 <strong>Atajos:</strong> <kbd>Ctrl+Shift+W</kbd> para abrir · <kbd>Esc</kbd> para cerrar<br>
+      🗑️ Para borrar, deja vacío y guarda.
+    </p>
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+<script>
+// AÑO FOOTER
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// CONFIGURACIÓN WEBHOOKS
+const LS_KEY_FORM = 'aikido_webhook_form';
+const LS_KEY_CHAT = 'aikido_webhook_chat';
+const DEFAULT_FORM = '';
+const DEFAULT_CHAT = '';
+
+const admin = document.getElementById('admin');
+const adminToggle = document.getElementById('adminToggle');
+const webhookFormInput = document.getElementById('webhookForm');
+const webhookChatInput = document.getElementById('webhookChat');
+const saveBtn = document.getElementById('save');
+const closeBtn = document.getElementById('closeAdmin');
+
+function getWebhookForm() {
+  return (localStorage.getItem(LS_KEY_FORM) || DEFAULT_FORM).trim();
+}
+
+function getWebhookChat() {
+  return (localStorage.getItem(LS_KEY_CHAT) || DEFAULT_CHAT).trim();
+}
+
+function openAdmin() {
+  webhookFormInput.value = localStorage.getItem(LS_KEY_FORM) || '';
+  webhookChatInput.value = localStorage.getItem(LS_KEY_CHAT) || '';
+  admin.style.display = 'flex';
+}
+
+function closeAdmin() {
+  admin.style.display = 'none';
+}
+
+// EVENTOS ADMIN
+if (location.hash === '#admin') openAdmin();
+
+window.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.shiftKey && (e.key === 'W' || e.key === 'w')) {
+    e.preventDefault();
+    openAdmin();
+  }
+  if (e.key === 'Escape') closeAdmin();
+});
+
+adminToggle.addEventListener('click', openAdmin);
+closeBtn.addEventListener('click', closeAdmin);
+admin.addEventListener('click', (e) => {
+  if (e.target === admin) closeAdmin();
+});
+
+saveBtn.addEventListener('click', () => {
+  const formVal = webhookFormInput.value.trim();
+  const chatVal = webhookChatInput.value.trim();
+  
+  if (formVal) {
+    localStorage.setItem(LS_KEY_FORM, formVal);
+  } else {
+    localStorage.removeItem(LS_KEY_FORM);
+  }
+  
+  if (chatVal) {
+    localStorage.setItem(LS_KEY_CHAT, chatVal);
+  } else {
+    localStorage.removeItem(LS_KEY_CHAT);
+  }
+  
+  alert('✅ Webhooks guardados correctamente.\n\n📝 Formulario: ' + (formVal || 'No configurado') + '\n💬 Chatbot: ' + (chatVal || 'No configurado'));
+  
+  // Recargar el chatbot si se configuró
+  if (chatVal) {
+    location.reload();
+  } else {
+    closeAdmin();
+  }
+});
+
+// FORMULARIO
+const form = document.getElementById('form');
+const statusEl = document.getElementById('status');
+const submitBtn = document.getElementById('send');
+
+function setStatus(type, msg) {
+  statusEl.className = 'status ' + type;
+  statusEl.textContent = msg;
+  statusEl.style.display = 'block';
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  // Anti-spam honeypot
+  if (document.getElementById('website').value.trim() !== '') {
+    setStatus('warn', 'Detección anti-spam: cancelado.');
+    return;
+  }
+  
+  // Validación consentimiento
+  if (!document.getElementById('consent').checked) {
+    setStatus('warn', 'Debes aceptar el consentimiento.');
+    return;
+  }
+  
+  // Validación HTML5
+  if (!form.reportValidity()) {
+    setStatus('warn', 'Revisa los campos obligatorios.');
+    return;
+  }
+
+  // Preparar datos
+  const payload = {
+    name: document.getElementById('name').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    message: document.getElementById('msg').value.trim(),
+    meta: {
+      ts: new Date().toISOString(),
+      ua: navigator.userAgent,
+      page: location.href,
+      source: 'aikido-valdemoro-landing'
+    }
+  };
+
+  const webhook = getWebhookForm();
+  
+  if (!webhook || !/^https?:\/\//i.test(webhook)) {
+    setStatus('warn', '⚠️ Webhook no configurado. Haz clic en ⚙️ para configurar.');
+    return;
+  }
+
+  submitBtn.disabled = true;
+  setStatus('warn', 'Enviando…');
+  
+  try {
+    const res = await fetch(webhook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    
+    let data = null;
+    try {
+      data = await res.json();
+    } catch (_) {}
+    
+    setStatus('ok', '¡Enviado! Te contactaremos pronto.');
+    form.reset();
+    
+  } catch (err) {
+    console.error(err);
+    setStatus('err', 'Error al enviar. Verifica el webhook y CORS en n8n.');
+  } finally {
+    submitBtn.disabled = false;
+  }
+});
+</script>
+
+<!-- N8N CHATBOT -->
+<script type="module">
+import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+const chatWebhook = localStorage.getItem('aikido_webhook_chat') || '';
+
+if (chatWebhook && /^https?:\/\//i.test(chatWebhook)) {
+  createChat({
+    webhookUrl: chatWebhook,
+    webhookConfig: {
+      method: 'POST',
+      headers: {}
+    },
+    target: '#n8n-chat',
+    mode: 'window',
+    chatInputKey: 'chatInput',
+    chatSessionKey: 'sessionId',
+    loadPreviousSession: true,
+    metadata: {},
+    showWelcomeScreen: false,
+    defaultLanguage: 'es',
+    initialMessages: [
+      '🥋 ¡Hola! Soy DojoBot, tu asistente del tatami.',
+      '¿Tienes preguntas sobre horarios, precios, cómo empezar o cualquier duda? ¡Pregúntame!'
+    ],
+    i18n: {
+      es: {
+        title: '💬 ¿Necesitas ayuda?',
+        subtitle: "Chatea con nosotros",
+        footer: '',
+        getStarted: '👋 Iniciar chat',
+        inputPlaceholder: 'Escribe tu pregunta...',
+      },
+    },
+    enableStreaming: false,
+  });
+} else {
+  console.warn('⚠️ Chatbot n8n no configurado. Ve a ⚙️ para añadir el webhook.');
+}
+</script>
+
+</body>
+</html>

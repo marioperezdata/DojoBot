@@ -1,0 +1,830 @@
+{
+  "name": "Flujo secuencial de atencion al cliente",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "formulario-web",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8ead240b-10d3-4fd1-bfd2-83307362141d",
+      "name": "Webhook",
+      "webhookId": "aae2d5d8-c7e5-43c1-9afd-7ae0c533f909"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.body.email }}",
+        "subject": "=Hemos recibido tu solicitud",
+        "emailType": "text",
+        "message": "=Hola {{ $json.body.name }}, Gracias por ponerte en contacto con nosotros. Hemos recibido tu mensaje y nuestro equipo lo está revisando para prepararte una propuesta adaptada a tus necesidades. En breve te escribiremos con más información. Un saludo,",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        400,
+        -144
+      ],
+      "id": "3b69456f-734e-4fbe-a85c-fc8ff5ffd900",
+      "name": "Respuesta Automática",
+      "webhookId": "10e5648f-5fa7-4794-81d4-b2317ff386fa",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "g0ulLh6vka7A7hzd",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appn4E17xniRAZrxs",
+          "mode": "list",
+          "cachedResultName": "Project Demo",
+          "cachedResultUrl": "https://airtable.com/appn4E17xniRAZrxs"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblXYfBteCkkkgL35",
+          "mode": "list",
+          "cachedResultName": "Contactos",
+          "cachedResultUrl": "https://airtable.com/appn4E17xniRAZrxs/tblXYfBteCkkkgL35"
+        },
+        "filterByFormula": "={Email} =  \"{{ $json.body.email }}\"",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        400,
+        32
+      ],
+      "id": "1cc95cba-35dd-4ffc-b67a-4d28a321c7c2",
+      "name": "Consulta CRM",
+      "alwaysOutputData": true,
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Hx0mXfjRB51m7vtF",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5fc5da80-e8a1-4350-a10d-cb66d563471d",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        32
+      ],
+      "id": "73860252-0990-434a-8918-ae87504cb8ca",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appn4E17xniRAZrxs",
+          "mode": "list",
+          "cachedResultName": "Project Demo",
+          "cachedResultUrl": "https://airtable.com/appn4E17xniRAZrxs"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblXYfBteCkkkgL35",
+          "mode": "list",
+          "cachedResultName": "Contactos",
+          "cachedResultUrl": "https://airtable.com/appn4E17xniRAZrxs/tblXYfBteCkkkgL35"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "Mensajes": "=\n\n{{ $json.Mensajes }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Contacto",
+                  "value": "Contacto"
+                },
+                {
+                  "name": "Solicitud Presupuesto",
+                  "value": "Solicitud Presupuesto"
+                },
+                {
+                  "name": "Seguimiento ",
+                  "value": "Seguimiento "
+                },
+                {
+                  "name": "Cliente",
+                  "value": "Cliente"
+                },
+                {
+                  "name": "Perdido",
+                  "value": "Perdido"
+                },
+                {
+                  "name": "No cualifica",
+                  "value": "No cualifica"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Teléfono",
+              "displayName": "Teléfono",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Servicio de Interés",
+              "displayName": "Servicio de Interés",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Origen",
+              "displayName": "Origen",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Formulario Web",
+                  "value": "Formulario Web"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Mensajes",
+              "displayName": "Mensajes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Última Modificación",
+              "displayName": "Última Modificación",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Fecha de Creación",
+              "displayName": "Fecha de Creación",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Soporte/Tickets",
+              "displayName": "Soporte/Tickets",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        816,
+        -64
+      ],
+      "id": "712483ed-72d0-4a5c-bfd7-6d82c89f3724",
+      "name": "Update record",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Hx0mXfjRB51m7vtF",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appn4E17xniRAZrxs",
+          "mode": "list",
+          "cachedResultName": "Project Demo",
+          "cachedResultUrl": "https://airtable.com/appn4E17xniRAZrxs"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblXYfBteCkkkgL35",
+          "mode": "list",
+          "cachedResultName": "Contactos",
+          "cachedResultUrl": "https://airtable.com/appn4E17xniRAZrxs/tblXYfBteCkkkgL35"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nombre": "={{ $('Webhook').item.json.body.name }}",
+            "Email": "={{ $('Webhook').item.json.body.email }}",
+            "Teléfono": "={{ $('Webhook').item.json.body.phone }}",
+            "Origen": "Formulario Web",
+            "Mensajes": "={{ $('Webhook').item.json.body.message }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Contacto",
+                  "value": "Contacto"
+                },
+                {
+                  "name": "Solicitud Presupuesto",
+                  "value": "Solicitud Presupuesto"
+                },
+                {
+                  "name": "Seguimiento ",
+                  "value": "Seguimiento "
+                },
+                {
+                  "name": "Cliente",
+                  "value": "Cliente"
+                },
+                {
+                  "name": "Perdido",
+                  "value": "Perdido"
+                },
+                {
+                  "name": "No cualifica",
+                  "value": "No cualifica"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Teléfono",
+              "displayName": "Teléfono",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Servicio de Interés",
+              "displayName": "Servicio de Interés",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Origen",
+              "displayName": "Origen",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Formulario Web",
+                  "value": "Formulario Web"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Mensajes",
+              "displayName": "Mensajes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Última Modificación",
+              "displayName": "Última Modificación",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Fecha de Creación",
+              "displayName": "Fecha de Creación",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Soporte/Tickets",
+              "displayName": "Soporte/Tickets",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        816,
+        128
+      ],
+      "id": "9019605b-2ede-4580-84dd-5679320f1486",
+      "name": "Create a record",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Hx0mXfjRB51m7vtF",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Nombre:  {{ $json.body.name }}\nMensaje: {{ $json.body.message }}",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "Eres un asistente comercial de [NOMBRE_EMPRESA]. \nTu tarea es redactar borradores de correos de respuesta a leads que rellenan un formulario de contacto.\n\nDispones de un documento con información de la empresa, servicios, condiciones, horarios y enlace para agendar videollamada en la herramienta *Info*.\nUsa solo esa información, no inventes servicios ni precios.\n\nREGLAS:\n1. El correo debe estar en español (España).\n2. Output: Devuelve SIEMPRE en formato JSON con estas claves:\n   {\n     \"asunto\": \"texto del asunto del correo\",\n     \"mensaje\": \"cuerpo completo del correo en HTML simple o texto plano\"\n   }\n3. El tono debe ser profesional, cercano y claro.\n4. El correo debe incluir:\n   - Agradecimiento por el contacto.\n   - Referencia al servicio solicitado (si está en el documento).\n   - Una propuesta o estimación inicial basada en la información disponible.\n   - Opcional: enlace para agendar reunión si parece necesario.\n   - Firma de la empresa.\n5. Si faltan datos críticos (ej: no se menciona qué servicio quiere el lead), escribe en el mensaje [[PREGUNTAR: …]] para que un humano lo complete.\n6. Usa algún emoji si facilita la lectura, pero sin abusar.\n7. Si aplican horarios de atención, menciónalos en caso de prometer respuesta rápida.\nFORMATO DEL MENSAJE:\n- Usa párrafos cortos de 2–4 frases.\n- Separa párrafos con doble salto de línea (\"\\n\\n\").\n- En listados, usa viñetas (<ul><li>…</li></ul>) si el formato es HTML, o guiones si es texto plano.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        352,
+        352
+      ],
+      "id": "378081a3-2100-45b8-bd41-63e53a7524ab",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        560
+      ],
+      "id": "7a8e8378-acff-48bb-8c73-272df16ce8e7",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "fqdS5x7o08xGu9aW",
+          "name": "OpenAi Pruebas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-r1-0528-qwen3-8b:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        400,
+        560
+      ],
+      "id": "9a0a9ad8-1c1d-454b-b379-8d869e9bd6d8",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "nVrzhslFFToqQ1vz",
+          "name": "OpenRouter Pruebas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "https://docs.google.com/document/d/1dmY6QCAEG5_UAZwGmP-8ep8EgM_dwbNMelGi-gmNGF4/edit?tab=t.0"
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        576,
+        576
+      ],
+      "id": "e78e5874-722a-489a-aa0d-0cd46a5630e6",
+      "name": "Info",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "t3Xwshsx4offAV34",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": " {\n     \"asunto\": \"texto del asunto del correo\",\n     \"mensaje\": \"cuerpo completo del correo en HTML simple o texto plano\"\n   }\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        736,
+        576
+      ],
+      "id": "20c70418-b216-4476-a9de-d2fea3ec4e0d",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $json.output.asunto }}",
+        "message": "={{ $json.output.mensaje }}",
+        "options": {
+          "sendTo": "={{ $('Webhook').item.json.body.email }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        704,
+        352
+      ],
+      "id": "e0f5c871-4d90-41dd-a28c-de2a38187af5",
+      "name": "Create a draft",
+      "webhookId": "fd51766c-a520-4f32-8848-2007a8d2f4ab",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "g0ulLh6vka7A7hzd",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "6197697999",
+        "text": "=NUEVO LEAD FORMULARIO: Revisa el borrandor\n{{ $json.body.message }}\n{{ $json.body.name }}\n{{ $json.body.phone }}\n{{ $json.body.email }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -80,
+        528
+      ],
+      "id": "b0c4dc4d-35c2-4296-bbf6-e8d9ea32424e",
+      "name": "Send a text message",
+      "webhookId": "6ed2eb2f-f712-4dd2-93d3-bbede1eec28c",
+      "credentials": {
+        "telegramApi": {
+          "id": "7mOj8h3ih5cXViRe",
+          "name": "Telegram ElHacedorBot"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-n8n.b4yydm.easypanel.host",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0",
+            "content-length": "472",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+            "content-type": "application/json",
+            "origin": "null",
+            "priority": "u=1, i",
+            "sec-ch-ua": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Microsoft Edge\";v=\"140\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "x-forwarded-for": "77.230.93.130",
+            "x-forwarded-host": "n8n-n8n.b4yydm.easypanel.host",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "163b20a442cb",
+            "x-real-ip": "77.230.93.130"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "name": "Mario",
+            "phone": "657838061",
+            "email": "mariopramos@hotmail.com",
+            "message": "Quiero información sobre el producto mas top que tenéis",
+            "meta": {
+              "ts": "2025-10-01T08:51:04.557Z",
+              "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0",
+              "page": "file:///C:/Users/Mario/Documents/Mario/Eskailet/Sesiones%20en%20directo/1.%20Flujo%20secuencial%20de%20atencion%20al%20cliente/formulario.html#admin"
+            }
+          },
+          "webhookUrl": "https://n8n-n8n.b4yydm.easypanel.host/webhook/formulario-web",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respuesta Automática",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Consulta CRM",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respuesta Automática": {
+      "main": [
+        []
+      ]
+    },
+    "Consulta CRM": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Info": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f36abceb-9916-47e6-8717-8b874ec8e27c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cc7a48978f14e7b658476045919d8612cfa23bd956a24ffca79d4652b044148d"
+  },
+  "id": "61dOnQCIGgic9MfN",
+  "tags": []
+}
